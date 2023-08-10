@@ -22,12 +22,36 @@
 Color *evaluateOnePixel(Image *image, int row, int col)
 {
 	//YOUR CODE HERE
+	//the white or black color to be returned
+	Color *secret = (Color *) malloc (sizeof(Color));
+	//find the specified color
+	Color *c = *(image->image + image->cols * row + col);
+	/* 
+		0101 0110 & 0000 0001 is equal to 0000 0001
+		0101 1110 & 0000 0001 is equal to 0000 0000
+	   	& operator can be used to identify whether the binary representation of a decimal ends with 1 or not
+	*/
+	int tmp = (c->B) & 1;
+	secret->B = secret->G = secret->R = tmp * 255;
+	return secret;
 }
 
 //Given an image, creates a new image extracting the LSB of the B channel.
 Image *steganography(Image *image)
 {
 	//YOUR CODE HERE
+	Image *img = (Image *) malloc (sizeof(Image));
+	img->cols = image->cols;
+	img->rows = image->rows;
+	img->image = (Color **) malloc (sizeof(Color) * image->cols * image->rows);
+	Color **colors = img->image;
+	for (int i = 0; i < image->rows; i += 1) {
+		for (int j = 0; j < image->cols; j += 1) {
+			*colors = evaluateOnePixel(image, i, j);
+			colors += 1;
+		}
+	}
+	return img;
 }
 
 /*
@@ -46,4 +70,15 @@ Make sure to free all memory before returning!
 int main(int argc, char **argv)
 {
 	//YOUR CODE HERE
+	if (argc != 2) {
+		printf("wrong number of arguments");
+		return -1;
+	}
+	char file_name = argv[1];
+	Image *origial = readData(file_name);
+	Image *new = steganography(origial);
+	writeData(new);
+	freeImage(origial);
+	freeImage(new);
+	return 0;
 }
