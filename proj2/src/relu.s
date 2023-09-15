@@ -16,13 +16,19 @@ relu:
     # Prologue
     li t0, 1 # t0 = zero, t0 acts as a counter which decides to terminate the LOOP when t1 >= a1
 
-    blt a1, t0, loop_end # if a1 < 1 loop_end because the length of the vector is less than 1
+    blt a1, t0, exception # if a1 < 1 loop_end because the length of the vector is less than 1
 
-    addi a0, a0, -4 # a1 = a1 -4
-    
 loop_start:
 
-    bgt t0, a1, done # if t0 >= a1 then goto loop_end because the iteration process is done
+    bgt t0, a1, loop_end # if t0 >= a1 then goto loop_end because the iteration process is done
+
+    li t3, 1 # t3 = 1
+
+    bne t0, t3, update # if it's not the first element then update a0 now
+    
+    j loop_continue # if it's the first element then no need for update
+
+update:
 
     addi a0, a0, 4 # a1 = a1 + 4
 
@@ -40,13 +46,13 @@ loop_continue:
  
     j loop_start  # jump to loop_start
     
-loop_end:
+exception:
 
     li a1 78
 
-    j exit2
+    j exit2 # terminate with error code 78
 
     # Epilogue
 
-done:    
+loop_end:    
 	ret

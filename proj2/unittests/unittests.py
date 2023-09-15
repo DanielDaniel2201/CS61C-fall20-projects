@@ -85,16 +85,20 @@ class TestArgmax(TestCase):
     def test_simple(self):
         t = AssemblyTest(self, "argmax.s")
         # create an array in the data section
-        raise NotImplementedError("TODO")
         # TODO
+        array = t.array([1, 2, -4, 8, 3, 5])
         # load address of the array into register a0
         # TODO
+        t.input_array("a0", array)
         # set a1 to the length of the array
         # TODO
+        t.input_scalar("a1", len(array))
         # call the `argmax` function
         # TODO
+        t.call("argmax")
         # check that the register a0 contains the correct output
         # TODO
+        t.check_scalar("a0", 3)
         # generate the `assembly/TestArgmax_test_simple.s` file and run it through venus
         t.execute()
 
