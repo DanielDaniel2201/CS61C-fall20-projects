@@ -22,6 +22,13 @@ class TestAbs(TestCase):
         t.check_scalar("a0", 1)
         t.execute()
 
+    def test_minus_one(self):
+        t = AssemblyTest(self, "abs.s")
+        t.input_scalar("a0", -1)
+        t.call("abs")
+        t.check_scalar("a0", 1)
+        t.execute()
+
     @classmethod
     def tearDownClass(cls):
         print_coverage("abs.s", verbose=False)
@@ -43,6 +50,32 @@ class TestRelu(TestCase):
         # generate the `assembly/TestRelu_test_simple.s` file and run it through venus
         t.execute()
 
+    def test_all_positive(self):
+        t = AssemblyTest(self, "relu.s")
+        array1 = t.array([1, 2, 3, 4, 5, 6])
+        t.input_array("a0", array1)
+        t.input_scalar("a1", len(array1))
+        t.call("relu")
+        t.check_array(array1, [1, 2, 3, 4, 5, 6])
+        t.execute()
+
+    def test_all_negative(self):
+        t = AssemblyTest(self, "relu.s")
+        array2 = t.array([-1, -2, -3, -4, -5, -6])
+        t.input_array("a0", array2)
+        t.input_scalar("a1", len(array2))
+        t.call("relu")
+        t.check_array(array2, [0, 0, 0, 0, 0, 0])
+        t.execute()
+
+    def test_exception(self):
+        t = AssemblyTest(self, "relu.s")
+        array0 = t.array([]) 
+        t.input_array("a0", array0)
+        t.input_scalar("a1", len(array0))
+        t.call("relu") 
+        t.execute(code=78)
+        
     @classmethod
     def tearDownClass(cls):
         print_coverage("relu.s", verbose=False)
