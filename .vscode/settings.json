@@ -2,13 +2,11 @@
   "files.associations": {
     "imageloader.h": "c"
   },
-  "python.testing.unittestArgs": [
-    "-v",
-    "-s",
-    ".",
-    "-p",
-    "*test*.py"
-  ],
+  "python.testing.unittestArgs": ["-v", "-s", ".", "-p", "*test*.py"],
   "python.testing.pytestEnabled": false,
-  "python.testing.unittestEnabled": true
+  "python.testing.unittestEnabled": true,
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "python.formatting.provider": "none"
 }

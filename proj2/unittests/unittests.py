@@ -102,6 +102,15 @@ class TestArgmax(TestCase):
         # generate the `assembly/TestArgmax_test_simple.s` file and run it through venus
         t.execute()
 
+    def test_exception(self):
+        t = AssemblyTest(self, "argmax.s")
+        array0 = t.array([]) 
+        t.input_array("a0", array0)
+        t.input_scalar("a1", len(array0))
+        t.call("argmax") 
+        t.execute(code=77)
+
+
     @classmethod
     def tearDownClass(cls):
         print_coverage("argmax.s", verbose=False)
@@ -111,18 +120,110 @@ class TestDot(TestCase):
     def test_simple(self):
         t = AssemblyTest(self, "dot.s")
         # create arrays in the data section
-        raise NotImplementedError("TODO")
         # TODO
+        array0 = t.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+        array1 = t.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
         # load array addresses into argument registers
         # TODO
+        t.input_array("a0", array0)
+        t.input_array("a1", array1)
         # load array attributes into argument registers
         # TODO
+        t.input_scalar("a2", len(array0))
+        t.input_scalar("a3", 1)
+        t.input_scalar("a4", 1)
         # call the `dot` function
         t.call("dot")
         # check the return value
         # TODO
+        t.check_scalar("a0", 285)
         t.execute()
 
+    def test_stride(self):
+        t = AssemblyTest(self, "dot.s")
+        # create arrays in the data section
+        # TODO
+        array0 = t.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+        array1 = t.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+        # load array addresses into argument registers
+        # TODO
+        t.input_array("a0", array0)
+        t.input_array("a1", array1)
+        # load array attributes into argument registers
+        # TODO
+        t.input_scalar("a2", 3)
+        t.input_scalar("a3", 1)
+        t.input_scalar("a4", 2)
+        # call the `dot` function
+        t.call("dot")
+        # check the return value
+        # TODO
+        t.check_scalar("a0", 22)
+        t.execute()
+
+    def test_length_valid(self):
+        t = AssemblyTest(self, "dot.s")
+        # create arrays in the data section
+        # TODO
+        array0 = t.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+        array1 = t.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+        # load array addresses into argument registers
+        # TODO
+        t.input_array("a0", array0)
+        t.input_array("a1", array1)
+        # load array attributes into argument registers
+        # TODO
+        t.input_scalar("a2", 0)
+        t.input_scalar("a3", 2)
+        t.input_scalar("a4", 2)
+        # call the `dot` function
+        t.call("dot")
+        # check the return value
+        # TODO
+        t.execute(code=75)
+
+    def test_stride_valid(self):
+        t = AssemblyTest(self, "dot.s")
+        # create arrays in the data section
+        # TODO
+        array0 = t.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+        array1 = t.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+        # load array addresses into argument registers
+        # TODO
+        t.input_array("a0", array0)
+        t.input_array("a1", array1)
+        # load array attributes into argument registers
+        # TODO
+        t.input_scalar("a2", 3)
+        t.input_scalar("a3", 0)
+        t.input_scalar("a4", 2)
+        # call the `dot` function
+        t.call("dot")
+        # check the return value
+        # TODO
+        t.execute(code=76)
+
+    def test_stride_valid_2(self):
+        t = AssemblyTest(self, "dot.s")
+        # create arrays in the data section
+        # TODO
+        array0 = t.array([1])
+        array1 = t.array([1])
+        # load array addresses into argument registers
+        # TODO
+        t.input_array("a0", array0)
+        t.input_array("a1", array1)
+        # load array attributes into argument registers
+        # TODO
+        t.input_scalar("a2", 1)
+        t.input_scalar("a3", 1)
+        t.input_scalar("a4", 0)
+        # call the `dot` function
+        t.call("dot")
+        # check the return value
+        # TODO
+        t.execute(code=76)
+        
     @classmethod
     def tearDownClass(cls):
         print_coverage("dot.s", verbose=False)
