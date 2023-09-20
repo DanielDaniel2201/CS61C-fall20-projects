@@ -39,8 +39,8 @@ no_exception:
     addi sp, sp, -16 # set sp for 3 s registers
     sw s0, 12(sp) # store word for s0, the 1st multiplicand
     sw s1, 8(sp) # store word for s1, the 2nd multiplicand
-    sw s2, 4(sp) # store word for s2, each dot product, to be updated every loop
-    sw s3, 0(sp) # store word for s3, the ultimate dot product
+    sw s2, 4(sp) # store word for s2, each dot product, different every loop
+    sw s3, 0(sp) # store word for s3, the ultimate dot product, incremented by s2
     mv s2, zero
     mv s3, zero
     
@@ -64,21 +64,14 @@ subloop2:
     j subloop2
     
 loop_start:
-    bgt t0, a2, loop_end # goto loop_end when the interaion is done
+    bgt t0, a2, loop_end
     lw s0, 0(a0)
     lw s1, 0(a1)
-    li t5, 1 # counter for multiplication
-    mv s2, zero # reset s2 to 0
-mul_loop:
-    bgt t5, s1, mul_loop_end
-    addi t5, t5, 1
-    add s2, s2, s0
-    j mul_loop
-mul_loop_end:
+    mul s2, s0, s1
     add s3, s3, s2
-    addi t0, t0, 1
     add a0, a0, t3
     add a1, a1, t4
+    addi t0, t0, 1
     j loop_start
 
 loop_end:
