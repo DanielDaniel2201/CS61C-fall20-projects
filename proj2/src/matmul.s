@@ -68,7 +68,7 @@ no_exception:
     li t1, 1 # counter for inner loop
     li t2, 1 # counter for subloop for A pointer shift calculatoin
 
-    li t3, 0 # A-pointer shift amount
+    li t3, 0 # A-pointer python3 -m unittest unittests.TestReadMatrix -vshift amount
 
     # calculation of A pointer shift
 subloop_A_shift:
