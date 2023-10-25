@@ -520,6 +520,11 @@ end TCL_Generic;
       <a name="label" val="INSTRUCTION"/>
       <a name="width" val="32"/>
     </comp>
+    <comp lib="0" loc="(550,1540)" name="Tunnel">
+      <a name="facing" val="south"/>
+      <a name="label" val="INSTRUCTION"/>
+      <a name="width" val="32"/>
+    </comp>
     <comp lib="0" loc="(600,200)" name="Tunnel">
       <a name="label" val="INSTRUCTION"/>
       <a name="width" val="32"/>
@@ -771,6 +776,7 @@ end TCL_Generic;
     <wire from="(4770,890)" to="(4770,910)"/>
     <wire from="(4790,870)" to="(4810,870)"/>
     <wire from="(520,200)" to="(600,200)"/>
+    <wire from="(550,1540)" to="(550,1700)"/>
     <wire from="(590,220)" to="(590,260)"/>
     <wire from="(590,70)" to="(590,180)"/>
     <wire from="(700,1600)" to="(700,1700)"/>
