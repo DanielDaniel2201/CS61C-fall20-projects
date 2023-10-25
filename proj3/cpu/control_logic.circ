@@ -100,7 +100,7 @@ end TCL_Generic;
   </lib>
   <lib desc="#Base" name="8">
     <tool name="Text Tool">
-      <a name="font" val="SansSerif plain 12"/>
+      <a name="font" val="SansSerif plain 26"/>
       <a name="halign" val="center"/>
       <a name="text" val=""/>
       <a name="valign" val="base"/>
@@ -147,7 +147,7 @@ end TCL_Generic;
     <tool lib="8" name="Edit Tool"/>
     <tool lib="8" name="Wiring Tool"/>
     <tool lib="8" name="Text Tool">
-      <a name="font" val="SansSerif plain 12"/>
+      <a name="font" val="SansSerif plain 26"/>
       <a name="halign" val="center"/>
       <a name="text" val=""/>
       <a name="valign" val="base"/>
@@ -885,6 +885,10 @@ end TCL_Generic;
       <a name="enable" val="false"/>
       <a name="width" val="3"/>
     </comp>
+    <comp lib="8" loc="(1084,680)" name="Text">
+      <a name="font" val="SansSerif plain 40"/>
+      <a name="text" val="ImmSel"/>
+    </comp>
     <comp lib="8" loc="(174,93)" name="Text">
       <a name="text" val="INPUTS to your circuit"/>
     </comp>
@@ -1083,6 +1087,7 @@ end TCL_Generic;
     <wire from="(280,820)" to="(280,870)"/>
     <wire from="(280,870)" to="(300,870)"/>
     <wire from="(280,980)" to="(280,1030)"/>
+    <wire from="(2970,610)" to="(2970,1530)"/>
     <wire from="(310,150)" to="(1040,150)"/>
     <wire from="(310,150)" to="(310,230)"/>
     <wire from="(310,230)" to="(330,230)"/>
@@ -1141,6 +1146,9 @@ end TCL_Generic;
     <wire from="(730,210)" to="(730,230)"/>
     <wire from="(750,230)" to="(790,230)"/>
     <wire from="(790,1360)" to="(820,1360)"/>
+    <wire from="(80,1530)" to="(2970,1530)"/>
+    <wire from="(80,610)" to="(2970,610)"/>
+    <wire from="(80,610)" to="(80,1530)"/>
     <wire from="(800,950)" to="(810,950)"/>
     <wire from="(810,210)" to="(810,230)"/>
     <wire from="(810,950)" to="(810,960)"/>
