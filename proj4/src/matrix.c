@@ -392,19 +392,27 @@ int pow_matrix(matrix *result, matrix *mat, int pow) {
         for (int i = 0; i < (size_t)(mat->rows * mat->cols); i += mat->cols + 1) {
             result->data[i] = 1;
         }
-    } else if (pow == 1) {
-        for (int i = 0; i < (size_t)(mat->rows * mat->cols); i++) {
-            result->data[i] = mat->data[i];
-        }
-    } else {
+    } else if (pow % 2 == 0) {
         // set temporary null matrix pointer
         matrix *tmp = NULL;
         allocate_matrix(&tmp, mat->rows, mat->cols);
         //perform recursion
-        pow_matrix(tmp, mat, pow - 1);
-        mul_matrix(result, tmp, mat);
+        mul_matrix(tmp, mat, mat);
+        pow_matrix(result, tmp, pow / 2);
         // free it
         deallocate_matrix(tmp);
+    } else if (pow % 2 == 1) {
+        matrix *tmp1 = NULL;
+        allocate_matrix(&tmp1, mat->rows, mat->cols);
+        matrix *tmp2 = NULL;
+        allocate_matrix(&tmp2, mat->rows, mat->cols);
+
+        mul_matrix(tmp1, mat, mat);
+        pow_matrix(tmp2, tmp1, (pow - 1) / 2);
+        mul_matrix(result, tmp2, mat);
+
+        deallocate_matrix(tmp1);
+        deallocate_matrix(tmp2);
     }
     return 0;
 }
