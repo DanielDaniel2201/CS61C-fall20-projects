@@ -172,7 +172,14 @@ int allocate_matrix_ref(matrix **mat, matrix *from, int offset, int rows, int co
 void fill_matrix(matrix *mat, double val) {
     // Task 1.5 TODO
     int num_data = mat->rows * mat->cols;
-    for (int i = 0; i < num_data; i++) mat->data[i] = val;
+    int i = 0;
+    for (; i < num_data / 4 * 4; i += 4) {
+        __m256d vec = _mm256_set1_pd(val);
+        _mm256_storeu_pd(mat->data + i, vec);
+    }
+    for (; i < num_data; i++) {
+        mat->data[i] = val;
+    }
 }
 
 /*
@@ -183,13 +190,20 @@ void fill_matrix(matrix *mat, double val) {
 int abs_matrix(matrix *result, matrix *mat) {
     // Task 1.5 TODO
     int num_data = mat->rows * mat->cols;
-    for (int i = 0; i < num_data; i++) {
-        double curr_data = mat->data[i];
-        if (curr_data < 0) {
-            result->data[i] = -1 * curr_data;
-            continue;
+    int i = 0;
+    for (; i < num_data / 4 * 4; i += 4) {
+        __m256d vec = _mm256_loadu_pd(mat->data + i);
+        __m256d zeros = _mm256_setzero_pd();
+        __m256d negVec = _mm256_sub_pd(zeros, vec);
+        __m256d absVec = _mm256_max_pd(negVec, vec);
+        _mm256_storeu_pd(result->data + i, absVec);
+    }
+    for (; i < num_data; i++) {
+        double currData = mat->data[i];
+        if (currData < 0) {
+            currData = 0 - currData;
         }
-        result->data[i] = curr_data;
+        result->data[i] = currData;
     }
     return 0;
 }
@@ -203,9 +217,15 @@ int abs_matrix(matrix *result, matrix *mat) {
 int neg_matrix(matrix *result, matrix *mat) {
     // Task 1.5 TODO
     int num_data = mat->rows * mat->cols;
-    for (int i = 0; i < num_data; i++) {
-        double curr_data = mat->data[i];
-        result->data[i] = -1 * curr_data;
+    __m256d zero = _mm256_setzero_pd();
+    int i = 0;
+    for (; i < num_data / 4 * 4; i += 4) {
+        __m256d vec = _mm256_loadu_pd(mat->data + i);
+        __m256d neged = _mm256_sub_pd(zero, vec);
+        _mm256_storeu_pd(result->data + i, neged);
+    }
+    for (; i < num_data; i++) {
+        result->data[i] = 0 - mat->data[i];
     }
     return 0;
 }
@@ -219,8 +239,12 @@ int neg_matrix(matrix *result, matrix *mat) {
 int add_matrix(matrix *result, matrix *mat1, matrix *mat2) {
     // Task 1.5 TODO
     int num_data = mat1->rows * mat1->cols;
-    for (int i = 0; i < num_data; i++) {
-        result->data[i] = mat1->data[i] + mat2->data[i];
+    int i = 0;
+    for (; i < num_data / 4 * 4; i += 4) {
+        __m256d vec1 = _mm256_loadu_pd(mat1->data + i);
+        __m256d vec2 = _mm256_loadu_pd(mat2->data + i);
+        __m256d sum = _mm256_add_pd(vec1, vec2);
+        _mm256_storeu_pd(result->data + i, sum);
     }
     return 0;
 }
@@ -235,8 +259,12 @@ int add_matrix(matrix *result, matrix *mat1, matrix *mat2) {
 int sub_matrix(matrix *result, matrix *mat1, matrix *mat2) {
     // Task 1.5 TODO
     int num_data = mat1->rows * mat1->cols;
-    for (int i = 0; i < num_data; i++) {
-        result->data[i] = mat1->data[i] - mat2->data[i];
+    int i = 0;
+    for (; i < num_data / 4 * 4; i += 4) {
+        __m256d vec1 = _mm256_loadu_pd(mat1->data + i);
+        __m256d vec2 = _mm256_loadu_pd(mat2->data + i);
+        __m256d sum = _mm256_sub_pd(vec1, vec2);
+        _mm256_storeu_pd(result->data + i, sum);
     }
     return 0;
 }
@@ -248,22 +276,53 @@ int sub_matrix(matrix *result, matrix *mat1, matrix *mat2) {
  * You may assume `mat1`'s number of columns is equal to `mat2`'s number of rows.
  * Note that the matrix is in row-major order.
  */
-int mul_matrix(matrix *result, matrix *mat1, matrix *mat2) {
-    // Task 1.6 TODO
-    int vec_len = mat1->cols;
-    int prod_num_row = mat1->rows, prod_num_col = mat2->cols;
-    for (int i = 0; i < prod_num_row; i++) {
-        for (int j = 0; j < prod_num_col;j++) {
-            double vec_prod = 0;
-            for (int k = 0; k < vec_len; k++){
-                double scalar_prod = mat1->data[i * mat1->cols + k] * mat2->data[k * mat2->cols + j];
-                vec_prod += scalar_prod;
-            }
-            result->data[i * prod_num_col + j] = vec_prod;
+
+double add_m256d(__m256d a) {
+    double sum = 0;
+    for (int i = 0; i < 4; i++) {
+        sum += a[i];
+    }
+    return sum;
+}
+
+/*convert a row-major matrix and store the column-major version into result*/
+void transpose(matrix *result, matrix *mat) {
+    for (int i = 0; i < mat->rows; i++) {
+        for (int j = 0; j < mat->cols; j++) {
+            double currData = mat->data[i * mat->cols + j];
+            result->data[j * mat->rows + i] = currData;
         }
     }
+}
+
+int mul_matrix(matrix *result, matrix *mat1, matrix *mat2) {
+    int vec_len = mat1->cols;
+    int prod_num_row = mat1->rows, prod_num_col = mat2->cols;
+
+    matrix *trans_mat2 = NULL;
+    allocate_matrix(&trans_mat2, mat2->cols, mat2->rows);
+    transpose(trans_mat2, mat2);
+
+    for (int i = 0; i < prod_num_row; i++) {
+        for (int j = 0; j < prod_num_col;j++) {
+            int k = 0;
+            double scalar_sum = 0;
+            for (; k < vec_len / 4 * 4; k += 4) {
+                __m256d vec1 = _mm256_loadu_pd(mat1->data + k);
+                __m256d vec2 = _mm256_loadu_pd(trans_mat2->data + k);
+                __m256d vec_prod = _mm256_mul_pd(vec1, vec2);
+                scalar_sum += add_m256d(vec_prod);
+            }
+            for (; k < vec_len; k++) {
+                scalar_sum += mat1->data[i * mat1->cols + k] * trans_mat2->data[j * mat1->cols + k];
+            }
+            result->data[i * prod_num_col + j] = scalar_sum;
+        }
+    }
+    deallocate_matrix(trans_mat2);
     return 0;
 }
+
 
 /*
  * Store the result of raising mat to the (pow)th power to `result`.
