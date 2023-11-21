@@ -326,6 +326,7 @@ double add_m256d(__m256d a) {
 
 /*convert a row-major matrix and store the column-major version into result*/
 void transpose(matrix *result, matrix *mat) {
+    #pragma omp parallel for
     for (int i = 0; i < mat->rows; i++) {
         for (int j = 0; j < mat->cols; j++) {
             double currData = mat->data[i * mat->cols + j];
